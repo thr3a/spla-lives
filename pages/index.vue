@@ -1,16 +1,18 @@
 <template>
   <div class="container">
-    <h1>スプラライブ</h1>
-    <div class="media" v-for="movie in movies" :key="movie.etag">
+    <nav class="navbar fixed-top navbar-dark bg-danger">
+      <a class="navbar-brand" href="/">スプラライブ検索</a>
+    </nav>
+    <p>Youtubeで生放送中のスプラトゥーン動画を表示します</p>
+    <div class="media mt-1" v-for="movie in movies" :key="movie.etag">
       <a :href="movie.id.videoId | url" target="_blank">
         <img class="d-flex mr-3 img" :src="movie.snippet.thumbnails.medium.url">
       </a>
       <div class="media-body">
         <a :href="movie.id.videoId | url" target="_blank">
-          <h5 class="mt-0">{{ movie.snippet.title }}</h5>
+          <h5 class="mt-0">{{ movie.snippet.title | truncate(30) }}</h5>
         </a>
-        <h5 class="mt-0">{{ movie.snippet.title }}</h5>
-        <span class="text-muted">{{ movie.snippet.started_at | fromNow }}</span>
+        <span class="text-muted">{{ movie.snippet.publishedAt | fromNow }}</span>
       </div>
     </div>
   </div>
@@ -24,7 +26,7 @@ export default {
   async asyncData({ params, app}) {
     const api_key = 'AIzaSyBP6-9ekseVKVlXdmdSW1xoeWqsvMae5FU'
     const word = encodeURIComponent('スプラトゥーン')
-    const url = `https://www.googleapis.com/youtube/v3/search?q=${word}&key=${api_key}&maxResults=50&type=video&part=snippet&order=date`
+    const url = `https://www.googleapis.com/youtube/v3/search?q=${word}&key=${api_key}&maxResults=50&type=video&part=snippet&order=date&eventType=live`
     const result = await app.$axios.$get(url)
     return { movies: result.items }
   },
@@ -34,12 +36,18 @@ export default {
     },
     url: function(id) {
       return `https://www.youtube.com/watch?v=${id}`
+    },
+    truncate: function(str, num) {
+      return str.substring(0, num);
     }
   }
 }
 </script>
 
 <style>
+.container {
+  padding-top: 80px;
+}
 .img {
   width: 200px;
 }
