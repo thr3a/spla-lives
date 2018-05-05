@@ -37,5 +37,8 @@ module.exports = {
   },
   css: [
     '@/assets/bootstrap.min.css'
+  ],
+    modules: [
+    '@nuxtjs/axios'
   ]
 }

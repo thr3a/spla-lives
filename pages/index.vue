@@ -1,64 +1,46 @@
 <template>
-  <section class="container">
-    <div>
-      <app-logo/>
-      <h1 class="title">
-        spla-lives
-      </h1>
-      <h2 class="subtitle">
-        ika
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
+  <div class="container">
+    <h1>スプラライブ</h1>
+    <div class="media" v-for="movie in movies" :key="movie.etag">
+      <a :href="movie.id.videoId | url" target="_blank">
+        <img class="d-flex mr-3 img" :src="movie.snippet.thumbnails.medium.url">
+      </a>
+      <div class="media-body">
+        <a :href="movie.id.videoId | url" target="_blank">
+          <h5 class="mt-0">{{ movie.snippet.title }}</h5>
+        </a>
+        <h5 class="mt-0">{{ movie.snippet.title }}</h5>
+        <span class="text-muted">{{ movie.snippet.started_at | fromNow }}</span>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import moment from 'moment-timezone'
+moment.locale('ja')
 
 export default {
-  components: {
-    AppLogo
+  async asyncData({ params, app}) {
+    const api_key = 'AIzaSyBP6-9ekseVKVlXdmdSW1xoeWqsvMae5FU'
+    const word = encodeURIComponent('スプラトゥーン')
+    const url = `https://www.googleapis.com/youtube/v3/search?q=${word}&key=${api_key}&maxResults=50&type=video&part=snippet&order=date`
+    const result = await app.$axios.$get(url)
+    return { movies: result.items }
+  },
+  filters: {
+    fromNow: function (date) {
+      return moment(date).tz('Asia/Tokyo').fromNow()
+    },
+    url: function(id) {
+      return `https://www.youtube.com/watch?v=${id}`
+    }
   }
 }
 </script>
 
 <style>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.img {
+  width: 200px;
 }
 </style>
