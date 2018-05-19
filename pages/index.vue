@@ -24,7 +24,7 @@ moment.locale('ja')
 
 export default {
   async asyncData({ params, app}) {
-    const api_key = 'AIzaSyBP6-9ekseVKVlXdmdSW1xoeWqsvMae5FU'
+    const api_key = process.env.YOUTUBE_API_KEY
     const word = encodeURIComponent('スプラトゥーン')
     const url = `https://www.googleapis.com/youtube/v3/search?q=${word}&key=${api_key}&maxResults=50&type=video&part=snippet&order=date&eventType=live`
     const result = await app.$axios.$get(url)
